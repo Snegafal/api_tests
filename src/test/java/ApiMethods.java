@@ -1,4 +1,6 @@
 import io.restassured.RestAssured;
+import io.restassured.http.Header;
+import io.restassured.http.Headers;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -12,7 +14,7 @@ public class ApiMethods {
     private final int ID_STPETERSBURG = 498817;
 
     @Test
-    void testGetUsersDetails() {
+    public void testStatusCodeAndStatusLine() {
         RestAssured.baseURI = "https://reqres.in/";
 
         RequestSpecification httpRequest = RestAssured.given();
@@ -24,8 +26,7 @@ public class ApiMethods {
     }
 
     @Test
-    void testSuccessfulRegistration() {
-
+    public void testSuccessfulRegistration() {
         RestAssured.baseURI = "https://reqres.in/";
         RequestSpecification httpRequest = RestAssured.given();
 
@@ -43,7 +44,7 @@ public class ApiMethods {
     }
 
     @Test
-    void testUnsuccessfulRegistration() {
+    public void testUnsuccessfulRegistration() {
         RestAssured.baseURI = "https://reqres.in/";
         RequestSpecification httpRequest = RestAssured.given();
 
@@ -60,14 +61,40 @@ public class ApiMethods {
     }
 
     @Test
-    void testGetWeather() {
+    public void testHeaders() {
         RestAssured.baseURI = "https://api.openweathermap.org";
         RequestSpecification httpRequest = RestAssured.given();
 
-        Response response = httpRequest.request(Method.GET, "/data/2.5/weather?id=" + ID_STPETERSBURG + "&appid=" + OPENWEATHERMAP_APIKEY);
+        Response response = httpRequest.request(Method.GET, "/data/2.5/weather?id="
+                + ID_STPETERSBURG + "&appid=" + OPENWEATHERMAP_APIKEY);
 
         Assert.assertEquals(response.header("Content-Length"), "482");
         Assert.assertEquals(response.header("X-Cache-Key"), "/data/2.5/weather?id=498817");
         Assert.assertEquals(response.header("Access-Control-Allow-Methods"), "GET, POST");
+    }
+
+    @Test
+    public void getAllHeaders() {
+        RestAssured.baseURI = "https://api.openweathermap.org";
+        RequestSpecification httpRequest = RestAssured.given();
+        Response response = httpRequest.request(Method.GET, "/data/2.5/weather?id="
+                + ID_STPETERSBURG + "&appid=" + OPENWEATHERMAP_APIKEY);
+
+        Headers allHeaders = response.headers();
+        for (Header header : allHeaders) {
+            System.out.println(header.getName() + ": " + header.getValue());
+        }
+    }
+
+    @Test
+    public void testResponseContainsCityName() {
+        RestAssured.baseURI = "https://api.openweathermap.org";
+        RequestSpecification httpRequest = RestAssured.given();
+        Response response = httpRequest.request(Method.GET, "/data/2.5/weather?id="
+                + ID_STPETERSBURG + "&appid=" + OPENWEATHERMAP_APIKEY);
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+        Assert.assertTrue(responseBody.contains("Saint Petersburg"));
     }
 }
