@@ -25,6 +25,7 @@ public class ApiMethods {
 
     @Test
     void testSuccessfulRegistration() {
+
         RestAssured.baseURI = "https://reqres.in/";
         RequestSpecification httpRequest = RestAssured.given();
 
