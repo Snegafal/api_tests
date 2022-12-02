@@ -64,7 +64,6 @@ public class ApiMethods {
         RequestSpecification httpRequest = RestAssured.given();
 
         Response response = httpRequest.request(Method.GET, "/data/2.5/weather?id=" + ID_STPETERSBURG + "&appid=" + OPENWEATHERMAP_APIKEY);
-//        response.getBody().prettyPrint();
 
         Assert.assertEquals(response.header("Content-Length"), "482");
         Assert.assertEquals(response.header("X-Cache-Key"), "/data/2.5/weather?id=498817");
