@@ -1,14 +1,11 @@
 package ApiReqres;
 
-import io.restassured.http.ContentType;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static ApiReqres.Specifications.requestSpecification;
-import static ApiReqres.Specifications.responseSpecification200OK;
+import static ApiReqres.Specifications.*;
 import static io.restassured.RestAssured.*;
 
 public class ReqresTest {
@@ -17,7 +14,7 @@ public class ReqresTest {
 
     @Test
     public void testCheckAvatarContainsId() {
-        Specifications.installSpecification(requestSpecification(URL), responseSpecification200OK());
+        installSpecification(requestSpecification(URL), responseSpecification200OK());
         List<UserData> users = given()
                 .when()
                 .get("api/users?page=2")
@@ -26,5 +23,42 @@ public class ReqresTest {
 
         users.forEach(x -> Assert.assertTrue(x.getAvatar().contains(x.getId().toString())));
         users.forEach(x -> Assert.assertTrue(x.getEmail().endsWith("@reqres.in")));
+    }
+
+    @Test
+    public void testSuccessfulRegistration() {
+        installSpecification(requestSpecification(URL), responseSpecification200OK());
+
+        Integer id = 4;
+        String token = "QpwL5tke4Pnpja7X4";
+        Register user = new Register("eve.holt@reqres.in", "pistol");
+
+        SuccessRegister successRegister = given()
+                .body(user)
+                .when()
+                .post("/api/register")
+                .then().log().all()
+                .extract().as(SuccessRegister.class);
+
+        Assert.assertNotNull(successRegister.getId());
+        Assert.assertNotNull(successRegister.getToken());
+
+        Assert.assertEquals(id, successRegister.getId());
+        Assert.assertEquals(token, successRegister.getToken());
+    }
+
+    @Test
+    public void testUnsuccessRegister() {
+        installSpecification(requestSpecification(URL), responseSpecification400Error());
+        Register user = new Register("sydney@fife", "");
+
+        UnsuccessRegister unsuccessRegister = given()
+                .body(user)
+                .when()
+                .post("/api/register")
+                .then().log().all()
+                .extract().as(UnsuccessRegister.class);
+
+        Assert.assertEquals("Missing password", unsuccessRegister.getError());
     }
 }

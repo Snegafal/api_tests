@@ -19,7 +19,6 @@ public class ApiMethods {
 
         RequestSpecification httpRequest = RestAssured.given();
         Response response = httpRequest.request(Method.GET, "/api/users/4");
-        response.getBody().prettyPrint();
 
         Assert.assertEquals(response.statusCode(), 200);
         Assert.assertEquals(response.getStatusLine(), "HTTP/1.1 200 OK");
@@ -37,7 +36,6 @@ public class ApiMethods {
         httpRequest.body(requestParameters.toJSONString());
 
         Response response = httpRequest.request(Method.POST, "/api/register");
-        response.getBody().prettyPrint();
 
         Assert.assertEquals(response.statusCode(), 200);
         Assert.assertEquals(response.statusLine(), "HTTP/1.1 200 OK");
@@ -54,7 +52,7 @@ public class ApiMethods {
         httpRequest.header("Content-type", "application/json");
         httpRequest.body(requestedParameters.toJSONString());
         Response response = httpRequest.request(Method.POST, "/api/register");
-        response.getBody().prettyPrint();
+
         Assert.assertEquals(response.statusCode(), 400);
         Assert.assertEquals(response.statusLine(), "HTTP/1.1 400 Bad Request");
         Assert.assertEquals(response.jsonPath().get("error"), "Missing password");
@@ -94,7 +92,7 @@ public class ApiMethods {
                 + ID_STPETERSBURG + "&appid=" + OPENWEATHERMAP_APIKEY);
 
         String responseBody = response.getBody().asString();
-        System.out.println(responseBody);
+
         Assert.assertTrue(responseBody.contains("Saint Petersburg"));
     }
 }
