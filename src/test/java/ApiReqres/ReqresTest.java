@@ -4,6 +4,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ApiReqres.Specifications.*;
 import static io.restassured.RestAssured.*;
@@ -60,5 +61,20 @@ public class ReqresTest {
                 .extract().as(UnsuccessRegister.class);
 
         Assert.assertEquals("Missing password", unsuccessRegister.getError());
+    }
+
+    @Test
+    public void testYearsSorting() {
+        installSpecification(requestSpecification(URL), responseSpecification200OK());
+        List<ResourcesData> resources = given()
+                .when()
+                .get("api/unknown")
+                .then().log().all()
+                .extract().body().jsonPath().getList("data", ResourcesData.class);
+
+        List<Integer> years = resources.stream().map(ResourcesData::getYear).collect(Collectors.toList());
+        List<Integer> yearsSorted = years.stream().sorted().collect(Collectors.toList());
+
+        Assert.assertEquals(years, yearsSorted);
     }
 }
